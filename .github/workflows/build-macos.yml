@@ -1,0 +1,51 @@
+name: Build macOS App
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "check_follow.py"
+      - "check_follow_gui.py"
+      - "build_mac.sh"
+      - "users.example.txt"
+      - ".github/workflows/build-macos.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyInstaller
+        run: python3 -m pip install --upgrade pyinstaller
+
+      - name: Build app bundle
+        run: |
+          chmod +x build_mac.sh
+          ./build_mac.sh
+
+      - name: Zip app bundle
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent \
+            "dist/TikTokFollowChecker.app" \
+            "dist/TikTokFollowChecker-macOS.zip"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TikTokFollowChecker-macOS
+          path: dist/TikTokFollowChecker-macOS.zip
+          if-no-files-found: error

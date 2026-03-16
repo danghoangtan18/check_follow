@@ -1,0 +1,14 @@
+{
+  "name": "check-follow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CLI tool to check public TikTok profile stats",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "check": "node index.js --help"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

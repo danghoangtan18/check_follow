@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.pyo
+
+build/
+dist/
+projects/
+
+TikTokFollowChecker-mac-build-ready.zip
+
+.DS_Store
+Thumbs.db
