@@ -150,3 +150,4 @@ Trong file text, moi dong la 1 user. Dong trong va dong bat dau bang `#` se bi b
 - Tool nay doc du lieu public duoc nhung san trong HTML profile cua TikTok.
 - Neu TikTok doi cau truc trang, tool co the can cap nhat lai parser.
 - Mot so tai khoan bi khoa, bi chan, hoac bi gioi han truy cap co the khong lay duoc du lieu.
+- Ban macOS build moi se kem CA bundle de tranh loi `SSL: CERTIFICATE_VERIFY_FAILED`.

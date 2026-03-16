@@ -29,8 +29,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install PyInstaller
-        run: python3 -m pip install --upgrade pyinstaller
+      - name: Install build dependencies
+        run: python3 -m pip install --upgrade pyinstaller certifi
 
       - name: Build app bundle
         run: |

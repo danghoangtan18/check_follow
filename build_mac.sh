@@ -9,7 +9,7 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
   exit 1
 fi
 
-python3 -m pip install --upgrade pyinstaller
+python3 -m pip install --upgrade pyinstaller certifi
 
 python3 -m PyInstaller \
   --noconfirm \

@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import ssl
 import sys
 import time
 from pathlib import Path
@@ -42,6 +43,11 @@ REQUEST_HEADERS = {
         "Chrome/133.0.0.0 Safari/537.36"
     ),
 }
+
+try:
+    import certifi
+except ImportError:  # pragma: no cover - optional dependency fallback
+    certifi = None
 
 
 def parse_args() -> argparse.Namespace:
@@ -162,12 +168,20 @@ def should_retry(message: str) -> bool:
     return any(signal in message for signal in retry_signals)
 
 
+def create_ssl_context() -> ssl.SSLContext:
+    if certifi is not None:
+        return ssl.create_default_context(cafile=certifi.where())
+
+    return ssl.create_default_context()
+
+
 def fetch_profile_stats(username: str) -> dict[str, Any]:
     profile_url = f"https://www.tiktok.com/@{quote(username)}?lang=en"
     request = Request(profile_url, headers=REQUEST_HEADERS)
+    ssl_context = create_ssl_context()
 
     try:
-        with urlopen(request, timeout=20) as response:
+        with urlopen(request, timeout=20, context=ssl_context) as response:
             html = response.read().decode("utf-8", errors="replace")
             status_code = getattr(response, "status", 200)
     except HTTPError as exc:
