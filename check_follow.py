@@ -21,7 +21,7 @@ RESOURCE_DIR = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent)).r
 
 def get_data_dir() -> Path:
     if getattr(sys, "frozen", False) and sys.platform == "darwin":
-        return (Path.home() / "Library" / "Application Support" / APP_NAME).resolve()
+        return (Path.home() / "Documents" / APP_NAME).resolve()
 
     executable_path = Path(
         sys.executable if getattr(sys, "frozen", False) else __file__

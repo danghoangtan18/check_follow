@@ -88,8 +88,10 @@ Khi ban check trong giao dien:
 Voi ban build macOS `.app`, du lieu project se duoc luu tai:
 
 ```bash
-~/Library/Application Support/TikTokFollowChecker/projects
+~/Documents/TikTokFollowChecker/projects
 ```
+
+Trong app co them nut `Open Data Folder` de mo nhanh thu muc nay.
 
 ## Command line
 
@@ -151,3 +153,4 @@ Trong file text, moi dong la 1 user. Dong trong va dong bat dau bang `#` se bi b
 - Neu TikTok doi cau truc trang, tool co the can cap nhat lai parser.
 - Mot so tai khoan bi khoa, bi chan, hoac bi gioi han truy cap co the khong lay duoc du lieu.
 - Ban macOS build moi se kem CA bundle de tranh loi `SSL: CERTIFICATE_VERIFY_FAILED`.
+- Ban macOS moi se luu project vao `Documents` de de thay va de tranh loi quyen ghi.

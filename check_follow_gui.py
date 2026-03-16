@@ -6,6 +6,8 @@ import csv
 import json
 import queue
 import re
+import shutil
+import subprocess
 import sys
 import threading
 import tkinter as tk
@@ -24,11 +26,14 @@ from check_follow import (
 
 APP_NAME = "TikTokFollowChecker"
 RESOURCE_DIR = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent)).resolve()
+LEGACY_MAC_DATA_DIR = (
+    Path.home() / "Library" / "Application Support" / APP_NAME
+).resolve()
 
 
 def get_data_dir() -> Path:
     if getattr(sys, "frozen", False) and sys.platform == "darwin":
-        return (Path.home() / "Library" / "Application Support" / APP_NAME).resolve()
+        return (Path.home() / "Documents" / APP_NAME).resolve()
 
     executable_path = Path(
         sys.executable if getattr(sys, "frozen", False) else __file__
@@ -61,6 +66,28 @@ def slugify_project_name(name: str) -> str:
 
 def current_timestamp() -> str:
     return datetime.now().isoformat(timespec="seconds")
+
+
+def migrate_legacy_mac_projects() -> None:
+    if sys.platform != "darwin":
+        return
+
+    legacy_projects_dir = LEGACY_MAC_DATA_DIR / "projects"
+    target_projects_dir = PROJECTS_DIR
+
+    if not legacy_projects_dir.exists():
+        return
+
+    target_projects_dir.mkdir(parents=True, exist_ok=True)
+
+    legacy_files = list(legacy_projects_dir.glob("*.json"))
+    if not legacy_files:
+        return
+
+    for legacy_file in legacy_files:
+        target_file = target_projects_dir / legacy_file.name
+        if not target_file.exists():
+            shutil.copy2(legacy_file, target_file)
 
 
 class MultiLineInputDialog(simpledialog.Dialog):
@@ -239,6 +266,7 @@ class CheckFollowApp:
         self.root.geometry("1240x780")
         self.root.minsize(1040, 660)
 
+        migrate_legacy_mac_projects()
         self.store = ProjectStore(PROJECTS_DIR)
         self.queue: queue.Queue[tuple[str, Any]] = queue.Queue()
         self.current_results: list[dict[str, Any]] = []
@@ -347,6 +375,13 @@ class CheckFollowApp:
             state="disabled",
         )
         self.delete_project_button.grid(row=0, column=5)
+
+        self.open_data_button = ttk.Button(
+            project_bar,
+            text="Open Data Folder",
+            command=self.open_data_folder,
+        )
+        self.open_data_button.grid(row=0, column=6, padx=(8, 0))
 
         ttk.Label(top, text="Danh sach user cua project").grid(
             row=1,
@@ -780,6 +815,22 @@ class CheckFollowApp:
         self.project_dirty = True
         self._schedule_autosave()
         self.status_var.set("Da nap users.example.txt vao o input. Bam Save Project neu muon luu.")
+
+    def open_data_folder(self) -> None:
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+        try:
+            if sys.platform == "darwin":
+                subprocess.run(["open", str(DATA_DIR)], check=False)
+            elif sys.platform == "win32":
+                subprocess.run(["explorer", str(DATA_DIR)], check=False)
+            else:
+                subprocess.run(["xdg-open", str(DATA_DIR)], check=False)
+        except Exception as exc:  # noqa: BLE001
+            messagebox.showerror("Khong mo duoc thu muc", str(exc))
+            return
+
+        self.status_var.set(f"Da mo thu muc luu du lieu: {DATA_DIR}")
 
     def load_file(self) -> None:
         file_path = filedialog.askopenfilename(
